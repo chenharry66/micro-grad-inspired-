@@ -14,9 +14,9 @@ class Filter:
         out = []
         for i in range(self.length-1, len(x)): 
             total = Value(0.0) 
-            for j, coefficient in zip(range(i, i-k), self.coefficients):
-                total += (Value(x[j]) * coefficient)
-            out.append(sub_sum)
+            for j, coefficient in zip(range(i, i-self.length, -1), self.coefficients):
+                total += (x[j] * coefficient)
+            out.append(total)
         return out
 
     def __repr__(self): 
@@ -26,11 +26,23 @@ class Filter_Net:
     def __init__(self, num_filters, filter_length): 
         self.num_filters = num_filters
         self.filter_length = filter_length
-        self.filters = [Filter(filter_length) for _ in num_filters]
+        self.filters = [Filter(filter_length) for _ in range(num_filters)]
     # where x is the input wave we just compile all of them together 
-    def __call__(x): 
-        return [filter(x) for filter in self.filters]
-      def __repr__(self): 
+    def __call__(self,x): 
+        res = []
+        for a_filter in self.filters: 
+            # print(x)
+            print(a_filter.coefficients) 
+            mini = a_filter(x)
+            print(mini)
+            res.append(mini)
+            
+        return res 
+        # return [a_filter(x) for a_filter in self.filters]
+    def __repr__(self): 
         return f"Filter Network with {num_filters} of Length {filter_length}"
-        
-print(Filter(5))
+
+filtered = Filter_Net(2, 3)
+filtered.filters[0].coefficients = [Value(1),Value(2),Value(3)]
+filtered.filters[1].coefficients = [Value(4),Value(5),Value(6)]
+print(filtered([1,2,1,1]))

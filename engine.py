@@ -1,3 +1,6 @@
 class Value: 
     def __init__(self, n): 
-        return 
+        self.n = n 
+    
+    def __add__(self, n): 
+        return n + n 
