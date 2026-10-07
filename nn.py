@@ -1,6 +1,11 @@
 import random
 from engine import Value 
 
+class Module: 
+    def zero_grad(self): 
+        for param in self.paramaters: 
+            param.grad = 0
+            
 class Neuron: 
     # no need to store its actually inpts
     def __init__(self, nin): 

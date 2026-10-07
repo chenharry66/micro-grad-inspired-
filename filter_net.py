@@ -9,6 +9,9 @@ class Filter:
         self.length = length 
         bound = 3 / math.sqrt(length)
         self.coefficients = [Value(random.uniform(-bound, bound)) for _ in range(self.length)]
+    
+    def paramaters(self): 
+        return self.coefficients
     # iteraitng on the audio from k, to end apply the filter 
     def __call__(self, x): 
         out = []
@@ -31,18 +34,11 @@ class Filter_Net:
     def __call__(self,x): 
         res = []
         for a_filter in self.filters: 
-            # print(x)
-            print(a_filter.coefficients) 
             mini = a_filter(x)
-            print(mini)
-            res.append(mini)
-            
+            res.append(mini)     
         return res 
         # return [a_filter(x) for a_filter in self.filters]
+    def paramaters(self): 
+        [param for filtera in self.filters for param in filtera.paramaters() ]
     def __repr__(self): 
         return f"Filter Network with {num_filters} of Length {filter_length}"
-
-filtered = Filter_Net(2, 3)
-filtered.filters[0].coefficients = [Value(1),Value(2),Value(3)]
-filtered.filters[1].coefficients = [Value(4),Value(5),Value(6)]
-print(filtered([1,2,1,1]))

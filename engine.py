@@ -66,6 +66,12 @@ class Value:
     def __repr__(self): 
         return f"Value {self.n}"
 
+    def __truediv(self, other): 
+        return self * other ** -1 
+
+    def __rtruediv(self, other): 
+        return self / other 
+
     # only call this on the root node/noe youre backporpgating from 
     def backward(self): 
         visited = set() 
@@ -79,7 +85,7 @@ class Value:
                 finished.append(node)
         # done processing all children then mark as finished 
         dfs(self)
-        
+
         self.grad = 1
 
         finished.reverse() 
