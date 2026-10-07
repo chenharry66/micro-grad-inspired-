@@ -1,12 +1,14 @@
 from filter_net import Filter_Net 
-from nn.py import MLP 
+from nn import MLP 
+
+
+# figure out the inputs and outputs of this model and then i know how to initializse this neural net 
 
 class Voice_Model
     def __init__(self)
         self.filter_net = Filter_Net() 
         self.nn = MLP()
     
-    # figure out if x is an audio or x is the converted wave form alreay 
-    # does it matter 
+    
     def __call__(self, x)
     

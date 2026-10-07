@@ -79,10 +79,10 @@ class Value:
                 finished.append(node)
         # done processing all children then mark as finished 
         dfs(self)
-
+        
         self.grad = 1
 
         finished.reverse() 
-        
+
         for node in finished: 
             node._backward() 
