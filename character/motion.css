@@ -1,0 +1,77 @@
+/* Set data-state on the SVG's parent: idle | dog | cat | cow. */
+.creature { transform-origin: 240px 385px; animation: breathe 3.2s ease-in-out infinite; }
+.head { transform-origin: 238px 285px; }
+.tail { transform-origin: 313px 327px; }
+.ear-left { transform-origin: 175px 195px; }
+.ear-right { transform-origin: 311px 191px; }
+.eyes { transform-origin: 235px 240px; animation: blink 5.6s infinite; }
+.arm-right { transform-origin: 310px 307px; transition: transform .55s cubic-bezier(.2,.8,.3,1); }
+.milk { opacity: 0; transition: opacity .16s ease; }
+.milk-arm { d: path("M310 303C325 304 334 313 328 324C325 330 322 335 318 336C315 337 312 335 309 334C307 333 305 331 306 328C308 326 310 325 312 323C315 318 312 311 309 321"); transition: d .85s cubic-bezier(.4,0,.2,1); }
+.milk-glass-motion { opacity: 0; transform: translate(-58px,12px) rotate(-8deg); transform-origin: 382px 320px; transition: transform .85s cubic-bezier(.4,0,.2,1), opacity .3s ease; }
+.milk-fingers { opacity: 0; transition: opacity .15s ease; }
+.arm-right { transition: opacity .16s ease; }
+.tail { transition: transform .85s cubic-bezier(.4,0,.2,1); }
+
+.shadow { transform-origin: 240px 399px; }
+[data-state="idle"] .head { animation: wonder 6s ease-in-out infinite; }
+[data-state="dog"] .tail { animation: wag .24s ease-in-out infinite alternate; }
+[data-state="dog"] .head { animation: dog-tilt 1.8s ease-in-out infinite; }
+[data-state="dog"] .ear-right { animation: ear-flop .48s ease-in-out infinite alternate; }
+[data-state="dog"] .tongue { display: inline !important; }
+/* One coordinated grooming cycle, retaining the front-facing proportions. */
+[data-state="cat"] .creature { animation: breathe 3.6s ease-in-out infinite; }
+[data-state="cat"] .arm-left { display: none; }
+[data-state="cat"] .cat-paws, [data-state="cat"] .cat-lick { display: inline !important; }
+[data-state="cat"] .groom-paw { transform-origin: 173px 309px; animation: groom-paw 3.6s ease-in-out infinite; }
+[data-state="cat"] .head, [data-state="cat"] .cat-lick { transform-origin: 238px 285px; animation: groom-head 3.6s ease-in-out infinite; }
+[data-state="cat"] .lick-tongue { transform-origin: 235px 276px; opacity: 0; transform: scale(.1); animation: groom-lick 3.6s ease-in-out infinite; }
+[data-state="cat"] .ear-left { animation: groom-ear 3.6s ease-in-out infinite; }
+[data-state="cat"] .tail { animation: cat-tail-sway 3.6s ease-in-out infinite; }
+[data-state="cat"] .eyes, [data-state="cow"] .eyes { display: none; }
+[data-state="cat"] .happy-eyes, [data-state="cow"] .happy-eyes { display: inline !important; }
+[data-state="cow"] .milk { opacity: 1; }
+[data-state="cow"] .milk-arm { d: path("M310 303C326 300 337 317 349 321C359 327 365 321 371 318C376 316 378 324 389 319C399 315 400 325 391 332C371 346 344 344 326 335C315 331 308 325 309 321"); }
+[data-state="cow"] .milk-glass-motion { opacity: 1; transform: translate(0,0) rotate(0); }
+[data-state="cow"] .milk-fingers { opacity: 1; transition-delay: .65s; }
+[data-state="cow"] .arm-right { opacity: 0; }
+[data-state="cow"] .tail { transform: rotate(65deg) scale(.85); }
+[data-state="cow"] .head { animation: proud 2.8s ease-in-out infinite; }
+[data-state="cow"] .sparkles { animation: sparkle 1.8s ease-in-out infinite; }
+.paused *, .paused .creature { animation-play-state: paused !important; }
+@keyframes breathe { 50% { transform: translateY(-3px) scale(1.012,1.018); } }
+@keyframes blink { 0%,43%,47%,100% { transform: scaleY(1); } 45% { transform: scaleY(.08); } }
+@keyframes wonder { 0%,35%,100% { transform: rotate(0); } 50%,70% { transform: rotate(-6deg); } }
+@keyframes wag { from { transform: rotate(-23deg); } to { transform: rotate(22deg); } }
+@keyframes dog-tilt { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+@keyframes ear-flop { to { transform: rotate(10deg); } }
+/* Raise, settle, lick twice, then release. The arm rotates at the shoulder. */
+@keyframes groom-paw {
+  0%,10%,86%,100% { transform: rotate(8deg); }
+  25%,60% { transform: rotate(-55deg); }
+  34%,49% { transform: rotate(-58deg); }
+  72% { transform: rotate(-12deg); }
+}
+@keyframes groom-head {
+  0%,12%,86%,100% { transform: rotate(0); }
+  27%,60% { transform: translate(-3px,2px) rotate(-4deg); }
+  34%,49% { transform: translate(-5px,4px) rotate(-5deg); }
+  72% { transform: translate(0,-2px) rotate(1deg); }
+}
+@keyframes groom-lick {
+  0%,27%,41%,44%,58%,100% { opacity: 0; transform: scale(.1); }
+  29%,46% { opacity: 1; transform: scale(.35); }
+  33%,36%,49%,52% { opacity: 1; transform: scale(1); }
+  38%,55% { opacity: 1; transform: scale(.8,.9); }
+}
+@keyframes groom-ear { 0%,61%,79%,100% { transform: rotate(0); } 67% { transform: rotate(-10deg); } 72% { transform: rotate(3deg); } }
+@keyframes cat-tail-sway { 0%,100% { transform: rotate(-12deg); } 50% { transform: rotate(-22deg); } }
+@keyframes proud { 0%,100% { transform: rotate(0); } 40%,70% { transform: translateY(-4px) rotate(-5deg); } }
+@keyframes sparkle { 0%,100% { opacity: .15; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .creature, .creature *, .shadow { animation: none !important; transition: none !important; }
+  [data-state="dog"] .tail { transform: rotate(-20deg); }
+  [data-state="cat"] .groom-paw { transform: rotate(-55deg); }
+  [data-state="cat"] .head { transform: rotate(-4deg); }
+  [data-state="cat"] .lick-tongue { opacity: 0; }
+}

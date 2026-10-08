@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Miso — character workshop</title>
+  <link rel="stylesheet" href="motion.css?v=9">
+  <style>
+    :root { color-scheme: light; font-family: ui-sans-serif, system-ui, sans-serif; color: #44392f; background: #f8f5ee; }
+    * { box-sizing: border-box; } body { margin: 0; } button { font: inherit; cursor: pointer; }
+    main { max-width: 1060px; margin: auto; padding: 38px 32px; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-bottom: 22px; border-bottom: 1px solid #dfdbd0; }
+    .eyebrow { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; }
+    .tag { border: 1px solid #d6d4c5; padding: 7px 12px; border-radius: 100px; font-size: 11px; color: #65715c; }
+    .layout { display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: center; padding: 35px 0; }
+    .stage { position: relative; min-height: 470px; display: grid; place-items: center; background: #eeeee3; border-radius: 48% 48% 36% 36%; }
+    .stage::before { content: ''; position: absolute; inset: 30px; border: 1px dashed #d3d6c3; border-radius: inherit; }
+    #character { position: relative; width: 100%; } #character svg { display: block; width: 100%; overflow: visible; }
+    .bubble { position: absolute; top: 24px; right: 38px; background: #fffdf7; padding: 12px 18px; border-radius: 19px 19px 19px 3px; transform: rotate(5deg); font-family: Georgia, serif; font-style: italic; font-size: 19px; box-shadow: 0 4px 0 #44392f0a; }
+    h1 { font: 58px/1.05 Georgia, serif; letter-spacing: -.05em; margin: 14px 0 20px; font-weight: normal; }
+    .intro { font-size: 15px; line-height: 1.7; color: #777267; max-width: 340px; }
+    .controls { display: grid; gap: 9px; margin-top: 27px; }
+    .state { display: flex; align-items: center; gap: 15px; text-align: left; border: 1px solid #dedacf; border-radius: 13px; padding: 12px 16px; background: transparent; color: inherit; }
+    .state[aria-pressed="true"] { background: #e6ebda; border-color: #82916e; box-shadow: 0 0 0 1px #82916e; }
+    .state:hover { background: #eeeee3; } .state:focus-visible, .subtle:focus-visible { outline: 3px solid #82916e; outline-offset: 4px; }
+    .number { font: 12px ui-monospace, monospace; opacity: .5; } .state strong { font-size: 14px; font-weight: 600; } .state small { display: block; font-size: 12px; color: #777267; margin-top: 3px; } .dot { margin-left: auto; width: 7px; height: 7px; border-radius: 50%; background: #82916e; opacity: 0; } .state[aria-pressed="true"] .dot { opacity: 1; }
+    .stage-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 20px 8px 0; font-size: 12px; color: #777267; }
+    .subtle { color: inherit; background: transparent; border: 1px solid #d6d4c5; border-radius: 100px; padding: 7px 12px; }
+    footer { border-top: 1px solid #dfdbd0; display: flex; justify-content: space-between; gap: 20px; padding-top: 20px; font-size: 11px; color: #878075; line-height: 1.6; }
+    @media(max-width: 700px) { main { padding: 24px 20px; } .layout { grid-template-columns: 1fr; gap: 30px; } .stage { min-height: 0; } .visual { max-width: 440px; width: 100%; margin: auto; } h1 { font-size: 46px; } .controls { grid-template-columns: 1fr 1fr; } .state { padding: 12px; gap: 8px; } footer { flex-direction: column; gap: 5px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header><span class="eyebrow">The very unsure animal club</span><span class="tag">Character study / 01</span></header>
+    <div class="layout">
+      <section class="visual" aria-label="Animated character preview">
+        <div class="stage"><div id="character" data-state="idle"></div><div class="bubble" id="bubble" aria-live="polite">what am I again?</div></div>
+        <div class="stage-footer"><span id="motion-label">Idle · a little confused</span><button class="subtle" id="pause" aria-pressed="false">Pause motion</button></div>
+      </section>
+      <section><span class="eyebrow">One creature. Three possibilities.</span><h1>Meet Miso.<br>Probably an animal.</h1><p class="intro">Cat ears. Cow spots. Dog energy.<br>A tiny identity crisis with a very good attitude.</p>
+        <div class="controls" aria-label="Preview a reaction">
+          <button class="state" data-pose="idle" aria-pressed="true"><span class="number">00</span><span><strong>Just existing</strong><small>Breathe, blink, wonder</small></span><span class="dot"></span></button>
+          <button class="state" data-pose="dog" aria-pressed="false"><span class="number">01</span><span><strong>Woof. I'm a dog!</strong><small>Enthusiastic tail wag</small></span><span class="dot"></span></button>
+          <button class="state" data-pose="cat" aria-pressed="false"><span class="number">02</span><span><strong>Meow. Obviously a cat.</strong><small>Paw up. Two little licks.</small></span><span class="dot"></span></button>
+          <button class="state" data-pose="cow" aria-pressed="false"><span class="number">03</span><span><strong>Moo. Have some milk.</strong><small>Produces a tiny glass. Somehow.</small></span><span class="dot"></span></button>
+        </div>
+      </section>
+    </div>
+    <footer><span>Hand-drawn SVG parts + CSS motion. Name and design are a first draft.</span><span>Manual preview · no microphone or model connected</span></footer>
+  </main>
+  <script src="preview.js?v=9"></script>
+</body>
+</html>

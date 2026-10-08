@@ -1,6 +1,7 @@
 # a value can be the child of multiple parents but a parent can only two children
 # each number just needs to figure out how it distibutes it gradient to its two chidlren 
 import numpy as np 
+import math 
 
 class Value: 
     def __init__(self, n, _children =(), _op=''): 
@@ -63,15 +64,34 @@ class Value:
         out._backward = backward
         return out 
 
+    def exp(self): 
+        out = Value(math.e ** self.n, (self,), 'exp')
+        def backward(): 
+            self.grad += (math.e ** self.n) * out.grad
+
+        out._backward = backward
+        return out
+
+    def ln(self): 
+        # dont forget to put childrne
+        out = Value(math.log(self.n), (self,), 'ln')
+
+        def backward(): 
+            self.grad += (1/self.n) * out.grad
+
+        out._backward = backward 
+
+        return out
+
     def __repr__(self): 
         return f"Value {self.n}"
 
-    def __truediv(self, other): 
+    def __truediv__(self, other): 
         return self * other ** -1 
 
-    def __rtruediv(self, other): 
+    def __rtruediv__(self, other): 
         return self / other 
-
+    
     # only call this on the root node/noe youre backporpgating from 
     def backward(self): 
         visited = set() 

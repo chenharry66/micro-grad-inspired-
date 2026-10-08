@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" role="img" aria-labelledby="creature-title">
+  <title id="creature-title">Miso, a confused little cat-dog-cow</title>
+  <defs>
+    <linearGradient id="milk-glass" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#d3e9e5" stop-opacity=".65"/></linearGradient>
+  </defs>
+  <ellipse class="shadow" cx="240" cy="399" rx="100" ry="15" fill="#423529" opacity=".12"/>
+  <g class="creature" stroke="#44392f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <g class="tail"><path d="M307 334C392 350 394 267 363 265C335 264 363 306 307 308" fill="#c99a70"/><path d="M363 265C349 265 350 278 353 286" fill="none" stroke="#fff0d6" stroke-width="12"/></g>
+    <g class="body">
+      <path d="M172 283Q143 316 156 379Q165 400 193 389L206 374H271L288 390Q318 400 326 376Q337 315 306 283Z" fill="#f4d8aa"/>
+      <path d="M260 296Q305 287 309 326Q311 348 284 349Q258 351 255 330Q241 315 260 296" fill="#8b6854" stroke="none"/>
+      <ellipse cx="234" cy="345" rx="38" ry="29" fill="#fff0d6" stroke="none"/>
+      <path d="M173 382L176 374M186 386L188 377M295 386L293 377M308 380L305 372" fill="none" stroke-width="3"/>
+    </g>
+    <g class="arm arm-left"><path d="M171 303Q144 309 154 337Q164 351 177 334" fill="#f4d8aa"/></g>
+    <g class="head">
+      <g class="ear ear-left"><path d="M148 219Q118 184 139 124Q180 133 191 183" fill="#f4d8aa"/><path d="M146 151L148 190L171 182Z" fill="#e5aa98" stroke="none"/></g>
+      <g class="ear ear-right"><path d="M282 180Q319 138 345 160Q371 184 350 233Q328 247 309 214" fill="#8b6854"/><path d="M324 178Q342 183 337 213" fill="none" stroke="#ac8266" stroke-width="10"/></g>
+      <g class="horns" fill="#fff2d9"><path d="M183 179Q166 155 186 140Q185 161 203 169Z"/><path d="M268 168Q286 159 285 141Q305 155 287 180Z"/></g>
+      <path d="M137 230Q137 180 185 172Q234 151 283 174Q331 187 336 232Q347 294 294 310Q241 326 183 308Q127 295 137 230Z" fill="#f4d8aa"/>
+      <path d="M151 208Q162 178 190 177Q219 182 210 213Q204 236 179 236Q158 233 151 208" fill="#8b6854" stroke="none"/>
+      <path d="M219 171L230 160L237 171L247 161L253 174" fill="#f4d8aa" stroke-width="4"/>
+      <g class="eyes"><ellipse cx="187" cy="240" rx="7" ry="10" fill="#44392f" stroke="none"/><ellipse cx="282" cy="240" rx="7" ry="10" fill="#44392f" stroke="none"/><circle cx="189" cy="237" r="2" fill="#fff" stroke="none"/><circle cx="284" cy="237" r="2" fill="#fff" stroke="none"/></g>
+      <g class="happy-eyes" fill="none" style="display:none"><path d="M177 242Q187 230 197 242M272 242Q282 230 292 242"/></g>
+      <g fill="#e5aa98" stroke="none" opacity=".8"><ellipse cx="169" cy="261" rx="14" ry="8"/><ellipse cx="299" cy="261" rx="14" ry="8"/></g>
+      <ellipse cx="236" cy="270" rx="35" ry="24" fill="#fff0d6" stroke="none"/>
+      <path d="M228 257Q236 253 244 257L237 264Q235 265 233 262Z" fill="#44392f" stroke-width="3"/>
+      <path class="mouth" d="M236 265V271Q226 283 218 273M236 271Q246 283 254 273" fill="none" stroke-width="3"/>
+      <g class="tongue" style="display:none"><path d="M237 275H252V284Q245 297 238 284Z" fill="#e79b94" stroke-width="3"/></g>
+      <g class="whiskers" fill="none" stroke-width="2.5"><path d="M162 270L143 267M164 279L148 285M308 269L325 265M307 278L323 284"/></g>
+    </g>
+    <g class="milk" opacity="0">
+      <g class="milk-glass-motion"><g transform="translate(21 -19)">
+        <path d="M339 275L344 334Q361 345 379 334L384 275Z" fill="#e2f0ed" stroke-width="3.5"/>
+        <path d="M343 289L348 330Q362 338 375 330L380 289Z" fill="#fffdf2" stroke="none"/>
+        <ellipse cx="361.5" cy="289" rx="18.5" ry="4" fill="#fff" stroke="none"/>
+        <ellipse cx="361.5" cy="275" rx="22.5" ry="5" fill="#f0f8f5" stroke-width="3"/>
+        <path d="M375 297L373 323" stroke="#fff" stroke-width="3"/>
+      </g>
+      </g>
+      <!-- Morph from the resting paw into a continuous supporting arm. -->
+      <path class="milk-arm" d="M310 303C326 300 337 317 349 321C359 327 365 321 371 318C376 316 378 324 389 319C399 315 400 325 391 332C371 346 344 344 326 335C315 331 308 325 309 321" fill="#f4d8aa" stroke-width="4"/>
+      <path class="milk-fingers" d="M370 330L372 335M379 328L381 333" fill="none" stroke-width="2"/>
+    </g>
+    <g class="arm arm-right"><path d="M310 304Q333 307 323 332Q315 345 305 334" fill="#f4d8aa"/></g>
+    <g class="cat-paws" style="display:none">
+      <g class="groom-paw">
+        <path d="M173 306Q191 302 208 319L220 335Q220 354 199 354Q180 344 172 326" fill="#f4d8aa"/>
+        <path d="M182 329Q177 315 187 313Q194 311 198 317Q201 306 210 311Q216 314 214 322Q226 319 228 329Q232 348 211 356Q190 360 182 343Z" fill="#fff0d6" stroke-width="4"/>
+        <g fill="#e5aa98" stroke="none"><ellipse cx="204" cy="340" rx="10" ry="8"/><ellipse cx="189" cy="326" rx="4" ry="5"/><ellipse cx="202" cy="320" rx="4" ry="5"/><ellipse cx="216" cy="327" rx="4" ry="5"/></g>
+      </g>
+    </g>
+    <!-- Above the paw so the tongue visibly touches its fur. -->
+    <g class="cat-lick" style="display:none">
+      <g class="lick-tongue">
+        <path d="M228 275C225 280 217 284 209 291C201 298 207 309 216 307C225 305 230 294 244 278Z" fill="#e79b94" stroke-width="2.5"/>
+        <path d="M235 280Q225 286 215 298" fill="none" stroke="#bf7376" stroke-width="1.5"/>
+      </g>
+    </g>
+    <g class="sparkles" opacity="0" fill="none" stroke="#b78b3b" stroke-width="3"><path d="M396 251V267M388 259H404M331 246V256M326 251H336"/></g>
+  </g>
+</svg>
