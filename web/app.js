@@ -5,18 +5,44 @@ const character = $('#character');
 const canvas = $('#waveform');
 const pen = canvas.getContext('2d');
 const reactions = {
-  Meow: { state: 'cat', bubble: 'one moment. bath time.', title: "I'm a cat!" },
-  Woof: { state: 'dog', bubble: 'oh! definitely a dog.', title: "I'm a dog!" },
-  Moo: { state: 'cow', bubble: 'I brought refreshments.', title: "I'm a cow!" },
+  Meow: { state: 'cat', bubble: "I'm a cat!", title: "I'm a cat!" },
+  Woof: { state: 'dog', bubble: "I'm a dog!", title: "I'm a dog!" },
+  Moo: { state: 'cow', bubble: "I'm a cow!", title: "I'm a cow!" },
 };
 
 let busy = false;
 let artworkReady = false;
 let live = null;
 let frame = 0;
+let demonTimer = null;
+let demon3d = null;
+const demonMusic=new Audio('/audio/bent-and-broken.mp3');demonMusic.preload='none';demonMusic.id='demon-music';demonMusic.hidden=true;document.body.append(demonMusic);
+let musicFade=null, demonSound=null;
+function makeDemonSound(){
+  const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;
+  const context=new C(),master=context.createGain();master.gain.value=.32;master.connect(context.destination);context.resume().catch(()=>{});
+  const buffer=context.createBuffer(1,context.sampleRate,context.sampleRate),data=buffer.getChannelData(0);
+  for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
+  return {mute(value){master.gain.setTargetAtTime(value?0:.32,context.currentTime,.02);},stop(){context.close().catch(()=>{});},play(kind){
+    if(context.state!=='running')return;
+    const t=context.currentTime,teleport=kind==='teleport';
+    const osc=context.createOscillator(),gain=context.createGain();osc.type=teleport?'sine':'triangle';osc.frequency.setValueAtTime(teleport?760:130,t);osc.frequency.exponentialRampToValueAtTime(teleport?95:38,t+(teleport?.2:.16));gain.gain.setValueAtTime(.001,t);gain.gain.exponentialRampToValueAtTime(teleport?.23:.5,t+.008);gain.gain.exponentialRampToValueAtTime(.001,t+.28);osc.connect(gain).connect(master);osc.start(t);osc.stop(t+.3);
+    for(let i=0;i<(teleport?2:7);i++){
+      const start=t+(teleport?i*.07:i*.035),duration=teleport?.16:.1+i*.015;
+      const noise=context.createBufferSource(),filter=context.createBiquadFilter(),env=context.createGain();noise.buffer=buffer;filter.type=teleport?'bandpass':'highpass';filter.frequency.setValueAtTime(teleport?2200:1700+i*380,start);filter.frequency.exponentialRampToValueAtTime(teleport?220:700,start+duration);filter.Q.value=teleport?3:.7;env.gain.setValueAtTime(teleport?.12:.19/(1+i*.25),start);env.gain.exponentialRampToValueAtTime(.001,start+duration);noise.connect(filter).connect(env).connect(master);noise.start(start,i*.07,duration);noise.stop(start+duration);
+    }
+    document.querySelector('#demon-scene').dataset.lastSound=kind;
+  }};
+}
+
+let demonGeneration = 0;
+let demonActive = false;
 
 function phase(name, message, button) {
   panel.dataset.phase = name;
+  const showingResult = name === 'result';
+  $('#result').setAttribute('aria-hidden', String(!showingResult));
+  $('.record-input').setAttribute('aria-hidden', String(showingResult));
   $('#status').textContent = message;
   $('#button-label').textContent = button;
   record.disabled = busy || !artworkReady;
@@ -164,13 +190,15 @@ function showResult(data) {
     const value = document.createElement('span'); value.className = 'score-value'; value.textContent = `${score.toFixed(1)}%`;
     row.append(name, track, value); $('#scores').append(row);
   }
-  $('#result').hidden = false;
+
 }
 
 async function start() {
   if (busy || !artworkReady) return;
+  stopDemon(false);
   busy = true;
-  $('#result').hidden = true;
+
+  $('#inspect-result').hidden = true;
   character.dataset.state = 'idle';
   $('#pose-label').textContent = 'Miso · listening for a clue';
   $('#timer').textContent = '1.0s';
@@ -223,7 +251,7 @@ async function start() {
 record.addEventListener('click', start);
 document.addEventListener('keydown', event => {
   if (event.code !== 'Space' || event.repeat || event.altKey || event.metaKey || event.ctrlKey
-      || event.target.closest('button,a,input,textarea,select,[contenteditable]')) return;
+      || $('#cheat-dialog').open || demonActive || event.target.closest('button,a,input,textarea,select,[contenteditable]')) return;
   event.preventDefault(); start();
 });
 $('#pause').addEventListener('click', event => {
@@ -245,7 +273,7 @@ async function initialize() {
     const health = await fetch('/api/health', { signal: AbortSignal.timeout(5000) });
     const data = await health.json();
     $('#model-status').textContent = data.ready ? 'Model connected' : 'Waiting for model';
-    phase('idle', data.ready ? 'Ready when you are. You’ll have one second.' : data.error, 'Make a sound');
+    phase('idle', data.ready ? 'Ready when you are.' : data.error, 'Make a sound');
   } catch (error) {
     $('#model-status').textContent = 'Not connected';
     phase('error', error.message || 'Check the server and refresh.', 'Make a sound');
@@ -293,4 +321,83 @@ function setupPetting() {
   button.addEventListener('pointerleave', () => { lastX = null; distance = 0; });
   button.addEventListener('click', pet); // Tap, Enter, and Space work too.
   window.addEventListener('pagehide', () => clearTimeout(timer));
+}
+
+
+// Deliberately local and cosmetic: this cheat never touches the model or recordings.
+const cheatDialog = $('#cheat-dialog');
+$('#cheat-open').addEventListener('click', () => {
+  stopDemon(false);
+  $('#cheat-error').textContent = '';
+  $('#cheat-code').value = '';
+  cheatDialog.showModal(); $('#cheat-code').focus();
+});
+$('#cheat-close').addEventListener('click', () => cheatDialog.close());
+$('#cheat-form').addEventListener('submit', event => {
+  event.preventDefault();
+  if ($('#cheat-code').value.trim().toUpperCase() !== 'MISO.EXE') {
+    $('#cheat-error').textContent = 'Unknown code. The creature window has a clue.';
+    return;
+  }
+  if (!artworkReady || busy) {
+    $('#cheat-error').textContent = 'Let Miso finish loading or listening first.'; return;
+  }
+  cheatDialog.close(); startDemon();
+});
+$('#demon-mute').addEventListener('click',()=>{demonMusic.muted=!demonMusic.muted;demonSound?.mute(demonMusic.muted);$('#demon-mute').textContent=demonMusic.muted?'Unmute audio':'Mute audio';$('#demon-mute').setAttribute('aria-pressed',String(demonMusic.muted));});
+$('#demon-stop').addEventListener('click', () => stopDemon());
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && demonActive) { event.preventDefault(); stopDemon(); }
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopDemon(false); });
+window.addEventListener('pagehide', () => stopDemon(false));
+window.addEventListener('resize', () => { if (demonActive) stopDemon(); });
+function stopDemon(restoreFocus = true) {
+  clearInterval(musicFade);musicFade=null;demonSound?.stop();demonSound=null;demonMusic.pause();demonMusic.currentTime=0;
+  clearTimeout(demonTimer); demonTimer = null;
+  demonGeneration++;
+  demon3d?.dispose(); demon3d = null;
+  $('#demon-portal').classList.remove('has-3d');
+  const wasActive = demonActive; demonActive = false;
+  $('#demon-scene').hidden = true;
+  $('#demon-scene').classList.remove('cinematic-tear');
+  $('#demon-portal').classList.remove('portal-enter', 'portal-exit');
+  document.body.classList.remove('demon-active');
+  $('.visual').classList.remove('portal-breach');
+  if (wasActive && restoreFocus) $('#cheat-open').focus({preventScroll: true});
+}
+async function startDemon() {
+  stopDemon(false); demonActive = true;demonSound=makeDemonSound();
+  demonMusic.muted=false;demonMusic.volume=0;$('#demon-mute').textContent='Mute audio';$('#demon-mute').setAttribute('aria-pressed','false');
+  $('#demon-mute').hidden=false;
+  if($('#demon-music-enabled').checked){demonMusic.play().then(()=>{if(!demonActive){demonMusic.pause();return;}musicFade=setInterval(()=>{demonMusic.volume=Math.min(.22,demonMusic.volume+.011);if(demonMusic.volume>=.22){clearInterval(musicFade);musicFade=null;}},100);}).catch(()=>{});}
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || character.classList.contains('paused');
+  const scene = $('#demon-scene'), portal = $('#demon-portal');
+  scene.classList.toggle('still-demon', reduced);
+  scene.hidden = false; document.body.classList.add('demon-active');
+  $('.visual').classList.add('portal-breach');
+  $('#demon-stop').focus({preventScroll: true});
+  const generation = demonGeneration;
+  try {
+    const { createDemon, loadRiggedDemon, disposeRiggedDemon } = await import('/demon3d.js');
+    if (!demonActive || generation !== demonGeneration) return;
+    $('#demon-caption').textContent='LOADING MISO…';
+    const asset=await loadRiggedDemon();
+    if(!demonActive || generation!==demonGeneration){disposeRiggedDemon(asset);return;}
+    demon3d = createDemon(portal, reduced, asset,kind=>demonSound?.play(kind));
+    portal.classList.add('has-3d');
+    scene.classList.add('cinematic-tear');
+  } catch (error) { console.error('Miso could not load.',error);stopDemon(false);cheatDialog.showModal();$('#cheat-error').textContent='Miso could not load. Please try again.';return; }
+  if (!demonActive || generation !== demonGeneration) return;
+  const size = Math.min(620, innerWidth * .78, innerHeight * .72);
+  portal.style.width = `${size}px`; portal.style.height = `${size}px`;
+  portal.style.left=`${(innerWidth-size)/2}px`;portal.style.top=`${(innerHeight-size)/2}px`;
+  demon3d.restart();
+  if(reduced)return;
+  demonTimer=setTimeout(()=>{
+    demon3d?.exit();
+    clearInterval(musicFade);
+    musicFade=setInterval(()=>{demonMusic.volume=Math.max(0,demonMusic.volume-.02);},100);
+    demonTimer=setTimeout(()=>stopDemon(),1800);
+  },15500);
 }

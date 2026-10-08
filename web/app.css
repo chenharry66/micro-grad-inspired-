@@ -166,7 +166,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 30px; }
 .home-desktop .welcome-aside p { font-size: 14px; margin: 0; }
 .home-desktop .welcome-aside .scroll-link { width: 100%; }
 .home-desktop .sound-sticker { width: 46px; height: 46px; font-size: 22px; }
-.home-desktop .layout { padding: 36px 0; gap: 46px; }
+.home-desktop .layout { padding: 36px 0; gap: 46px; align-items: start; }
 #character { position: relative; }
 .pet-head { position: absolute; left: 28%; top: 27%; width: 42%; height: 30%; z-index: 3; border: 0; border-radius: 45%; background: transparent; cursor: grab; touch-action: pan-y; }
 .pet-head:active { cursor: grabbing; }.pet-head:focus-visible { outline: 3px dashed #a25068; outline-offset: 3px; }
@@ -214,12 +214,149 @@ input, textarea, select, option, code, pre { font-family: var(--display); }
 .home-desktop .record-panel > .window-title { background: #efbbac; border-color: #9c8675; }
 .home-desktop .record-top .eyebrow { font: 450 20px/1.25 var(--friendly); text-transform: none; letter-spacing: 0; color: #655548; }
 .home-desktop .timer { font: 500 20px/1.2 var(--friendly); background: #f0dfbc; color: #715b40; padding: 5px 10px; border-radius: 12px; }
-.home-desktop #record { font: 500 20px/1.2 var(--friendly); letter-spacing: .01em; color: #513e34; background: #edb59f; border: 2px solid #826452; border-radius: 16px; padding: 13px 22px; box-shadow: 0 5px 0 #826452, inset 0 2px 0 #ffe8d2; }
+.home-desktop #record { font: 500 20px/1.2 var(--friendly); letter-spacing: .01em; color: #513e34; background: #edb59f; border: 1px solid #b58e78; border-radius: 16px; padding: 14px 23px; box-shadow: 0 3px 0 #bda08a, inset 0 2px 0 #ffe8d2; }
 .home-desktop #record:hover:not(:disabled) { background: #f5c6ae; }
-.home-desktop #record:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 #826452; }
+.home-desktop #record:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #bda08a; }
 .home-desktop [data-phase="recording"] #record { background: #b76058; color: #fff9ea; }
 .home-desktop #status { font: 400 15px/1.5 var(--friendly); color: #736451; margin-top: 19px; }
 .home-desktop .shortcut { font: 400 14px var(--friendly); color: #736451; }
 .home-desktop .record-body { padding: 22px; }
 .home-desktop .record-actions { gap: 18px; flex-wrap: wrap; }
 @media(max-width:420px) { .home-desktop .record-top .eyebrow { font-size: 18px; }.home-desktop #record { font-size: 18px; padding: 12px 17px; }.home-desktop .record-body { padding: 18px; }.home-desktop .record-actions { gap: 16px; } }
+
+/* Let the introduction breathe; keep Miso's thought softer than the controls. */
+.home-desktop .interaction > .intro { margin-bottom: 42px; }
+.home-desktop .interaction > h1 { margin-top: 20px; margin-bottom: 24px; }
+.home-desktop .bubble { background: #f8edcf; color: #75624d; border: 1px solid #d8c9a8; box-shadow: none; border-radius: 20px 20px 20px 7px; font: 400 14px/1.4 var(--friendly); padding: 10px 15px; transform: rotate(1deg); right: 25px; }
+@media(max-width:760px) { .home-desktop .interaction > .intro { margin-bottom: 34px; }.home-desktop .bubble { right: 16px; font-size: 13px; padding: 9px 12px; } }
+
+/* Prediction and recorder share the same warm, rounded visual language. */
+.home-desktop .result { font-family: var(--friendly); background: #fff9ea; border: 1px solid #9c8675; border-radius: 22px; padding: 23px; box-shadow: 0 5px 0 #d2c2a7; margin-top: 26px; }
+.home-desktop .result-heading { align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 19px; }
+.home-desktop .result-heading .eyebrow { font: 450 16px/1.3 var(--friendly); letter-spacing: 0; text-transform: none; color: #736451; }
+.home-desktop .result-heading strong { font: 500 28px/1.2 var(--friendly); color: #655548; }
+.home-desktop .score { font: 400 15px/1.4 var(--friendly); grid-template-columns: 46px 1fr 50px; gap: 12px; margin: 13px 0; color: #736451; }
+.home-desktop .score.winner { font-weight: 550; color: #655548; }
+.home-desktop .score-track { height: 8px; background: #ece5d4; }
+.home-desktop .score-fill { background: #c7cbb4; }.home-desktop .winner .score-fill { background: #c98770; }
+.home-desktop .result-note { font: 400 14px/1.5 var(--friendly); color: #736451; margin-top: 20px; }
+.home-desktop #inspect-result { font: 450 15px/1.4 var(--friendly); color: #655548; background: #f0dfbc; border: 1px solid #d7c39f; border-radius: 12px; padding: 9px 13px; text-decoration: none; margin-top: 8px; }
+.home-desktop #inspect-result:hover { background: #ead2a7; }
+@media(max-width:420px) { .home-desktop .result { padding: 18px; }.home-desktop .result-heading strong { font-size: 25px; } }
+
+/* One stable panel: recording and prediction occupy the same display area. */
+.home-desktop .record-display { display: grid; min-height: 0; margin-bottom: 22px; }
+.record-input, .home-desktop .record-display > .result { grid-area: 1 / 1; }
+.home-desktop .record-display > .result { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.home-desktop .record-display .result-heading { margin: 0 0 15px; }
+.home-desktop .record-display .score { margin: 11px 0; }
+.home-desktop .record-display .progress-track { margin-bottom: 0; }
+
+.home-desktop .record-feedback { min-height: 49px; display: grid; align-items: center; margin-top: 14px; position: relative; }
+.home-desktop .record-feedback #status { margin: 0; }
+.home-desktop .record-feedback #inspect-result { margin: 0; justify-self: start; }
+.home-desktop [data-phase="result"]:has(#inspect-result:not([hidden])) #status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media(max-width:420px) { .home-desktop .record-display { min-height: 0; }.home-desktop .record-display .result-heading { align-items: flex-start; gap: 8px; }.home-desktop .record-display .result-heading strong { font-size: 25px; } }
+
+/* Instant state changes: no animation between recording and prediction. */
+.home-desktop .record-display > .record-input,
+.home-desktop .record-display > .result {
+  transition: none;
+}
+.home-desktop .record-display > .record-input { opacity: 1; }
+.home-desktop .record-display > .result { opacity: 0; pointer-events: none; }
+.home-desktop [data-phase="result"] .record-display > .record-input { opacity: 0; pointer-events: none; }
+.home-desktop [data-phase="result"] .record-display > .result { opacity: 1; }
+@media(prefers-reduced-motion: reduce) {
+  .home-desktop .record-display > .record-input,
+  .home-desktop .record-display > .result { transition: none !important; }
+}
+
+/* Optional cheat terminal and bounded portal scene. No flashes or camera motion. */
+.cheat-key { margin-left: 14px; font: 16px var(--pixel); color: #536961; border: 1px solid #84968a; background: #f7eedb; padding: 5px 10px; border-radius: 7px; }
+#cheat-dialog { width: min(440px,calc(100vw - 32px)); padding: 0; border: 2px solid #88719e; border-radius: 12px; background: #20192b; color: #eee0ff; box-shadow: 7px 7px 0 #32233c; }
+#cheat-dialog::backdrop { background: #16102088; }
+.cheat-titlebar { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; background: #49325d; font: 11px var(--pixel); }
+.cheat-titlebar button { background: transparent; border: 0; color: #eee0ff; font-size: 24px; padding: 0 5px; }
+.cheat-body { padding: 24px; }.terminal-prompt { font: 26px var(--friendly); margin: 0 0 23px; }
+.cheat-body label { display: block; font: 13px var(--display); margin-bottom: 8px; }
+#cheat-code { width: 100%; border: 1px solid #9d7bbc; border-radius: 5px; background: #120e19; color: #e5beff; padding: 13px; font: 18px var(--pixel); text-transform: uppercase; }
+#cheat-help,.cheat-disclaimer { font: 12px/1.6 var(--display); color: #c4b3d4; }
+#cheat-error { min-height: 20px; font: 13px/1.5 var(--display); color: #f3bfb3; }
+.cheat-submit { font: 16px var(--friendly); background: #c4a1e5; color: #271c33; border: 1px solid #e5cefa; border-radius: 8px; padding: 11px 20px; box-shadow: 0 3px #7b5a97; }
+#demon-scene { position: fixed; inset: 0; z-index: 100; pointer-events: none; }
+.demon-controls { pointer-events: auto; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 18px; padding: 12px 16px; background: #20192b; color: #e5c8fc; border: 1px solid #b58ed2; border-radius: 12px; white-space: nowrap; font: 11px var(--pixel); box-shadow: 0 5px 20px #20192b33; }
+.demon-controls button { border: 1px solid #c6a4df; border-radius: 7px; color: #f3e5ff; background: #513762; padding: 9px 12px; font: 14px var(--friendly); }
+#demon-portal { position: absolute; isolation: isolate; }
+#demon-caption { position: absolute; bottom: 0; width: 100%; text-align: center; font: 11px var(--pixel); background: #20192be8; color: #e0bbf8; padding: 8px 4px; border-radius: 6px; }
+.demon-active #character > svg { visibility: hidden; }
+.demon-active .pet-head { pointer-events: none; }
+.portal-breach { outline: 2px dashed #a17abb; outline-offset: 7px; }
+.still-demon #demon-portal { animation: none; }
+@media(prefers-reduced-motion:reduce) { #demon-portal { animation: none !important; } }
+@media(max-width:500px) { .demon-controls { gap: 10px; padding: 10px; width: max-content; max-width: calc(100vw - 20px); font-size: 9px; }.cheat-titlebar { font-size: 10px; } }
+
+/* Miso Unchained — page ruptures, peeled surfaces, and dimensional circular rifts. */
+.unchained-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%,#170d2910 15%,#140b2975 85%); }
+.unchained-title { position: absolute; top: 28px; left: 36px; z-index: 4; color: #f6e9ff; text-shadow: 0 3px 0 #25102d,0 0 30px #7731a6; }
+.unchained-title > span { display: block; font: 11px var(--pixel); letter-spacing: 2px; color: #d0abec; margin-bottom: 9px; }
+.unchained-title strong { display: block; font: 800 clamp(32px,5.5vw,76px)/.85 var(--display); letter-spacing: -.05em; }
+.unchained-title em { font-style: normal; color: #cca0ff; }
+.unchained-title small { display: block; font: 13px var(--pixel); margin-top: 12px; color: #e2c8f5; }
+#demon-portal { perspective: 800px; transform-style: preserve-3d; isolation: auto; z-index: 2; }
+.portal-breach { outline: none; border-color: #673e80 !important; box-shadow: -9px 7px 0 #160c21,8px -5px 0 #925db188 !important; }
+.demon-controls { z-index: 5; background: #160e22f5; border-color: #9261b4; box-shadow: 0 8px 32px #170b2c66; }
+.demon-controls #demon-caption { position: static; width: auto; padding: 0; background: transparent; text-align: left; font: inherit; }
+
+/* The opt-in cinematic scene owns its camera; page layout remains stationary. */
+#demon-portal.has-3d { perspective: none; transform: none; }
+#demon-portal.has-3d > :not(.demon-webgl) { display: none; }
+#demon-portal .demon-webgl { position: absolute; inset: -20%; width: 140%; height: 140%; max-width: none; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.demon-active .unchained-vignette { background: radial-gradient(ellipse at center, #160d2010 15%, #100819b3 100%); }
+.demon-active .unchained-title { pointer-events: none; }
+/* One anchored rupture: no ring of shards and no repeating teleport tableau. */
+.cinematic-tear .unchained-title { opacity: 0; animation: unchained-announcement 6s both; }
+@keyframes unchained-announcement { 0%,47% { opacity: 0; transform: translateY(8px); } 56%,100% { opacity: 1; transform: translateY(0); } }
+.still-demon.cinematic-tear .unchained-title { animation: none; opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .cinematic-tear .unchained-title { animation: none; opacity: 1; } }
+
+.miso-roaming .unchained-vignette { opacity: 0; transition: opacity .5s; }
+.miso-roaming .unchained-title { display: none; }
+.miso-landing { animation: miso-platform-land .32s ease-out; }
+@keyframes miso-platform-land { 0% { translate: 0 0; } 35% { translate: 0 4px; } 100% { translate: 0 0; } }
+@media(prefers-reduced-motion: reduce) { .miso-landing { animation: none; } }
+
+#demon-portal .demon-webgl.digital-glitch { filter: drop-shadow(-2px 0 0 #5edbc888) drop-shadow(2px 0 0 #c65fe588); }
+@media (prefers-reduced-motion: reduce) { #demon-portal .demon-webgl.digital-glitch { filter: none; } }
+.cheat-body .audio-toggle { display:flex; align-items:center; gap:10px; font:500 16px var(--font-body); margin-top:18px; text-transform:none; letter-spacing:0; }
+.cheat-body #demon-music-enabled { width:18px; height:18px; flex:none; margin:0; accent-color:#b895de; }
+.miso-seat-shadow { position:fixed; width:40px; height:5px; border-radius:50%; background:#23122d; filter:blur(2px); pointer-events:none; z-index:1; }
+.miso-seat-shadow[hidden] { display:none; }
+
+/* Let only the visible recorder state determine its height. */
+.home-desktop .record-display > .result { display: none; }
+.home-desktop [data-phase="result"] .record-display > .record-input { display: none; }
+.home-desktop [data-phase="result"] .record-display > .result { display: block; }
+.home-desktop .welcome-title .sound-highlight { position: relative; display: inline-block; isolation: isolate; color: #354e4e; }
+.sound-highlight svg { position: absolute; z-index: -1; pointer-events: none; left: -.07em; top: .19em; width: 114%; height: .85em; transform: rotate(-2deg); overflow: visible; }
+.sound-highlight path { fill: #e9a189; opacity: .52; }
+.sound-highlight path + path { fill: #efb39a; opacity: .3; }
+
+/* A local recoil at the contact point; the rest of the page stays still. */
+.miso-struck { transform: translateY(9px) rotate(.7deg) !important; filter: drop-shadow(0 0 9px #ba77c577); transition: transform .08s ease-out !important; }
+@media(prefers-reduced-motion:reduce){.miso-struck{transform:none!important;filter:none;}}
+
+@media(pointer:fine) { .home-desktop, .home-desktop * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath fill='%23314e4e' d='M2 1h4v4h4v4h4v4h4v4h4v4H14v8h-4v-8H6v4H2z'/%3E%3Cpath fill='%23efb6ae' d='M4 5h2v4h4v4h4v4h4v2h-6v8h-2v-8H6v2H4z'/%3E%3C/svg%3E") 2 1, auto !important; } }
+.miso-damage { position: fixed; pointer-events: none; width: 240px; height: 240px; z-index: 4; overflow: visible; filter: drop-shadow(1px 1px 0 #fff9eaaa); }
+
+/* Persistent urgency without strobing or camera shake. */
+.demon-active .unchained-vignette { box-shadow: inset 0 0 45px 12px #7b27aa88, inset 0 0 4px 2px #d58bf1; }
+.miso-roaming .unchained-vignette { opacity: 1; background: transparent; pointer-events: none; }
+
+.miso-component-fragment { position:fixed; width:120px; height:120px; overflow:hidden; pointer-events:none; z-index:5; background:#fff9ea; }
+.miso-component-glitch { filter:drop-shadow(5px 0 0 #d277e288) drop-shadow(-4px 0 0 #77dfd177); }
+
+.cheat-disclaimer a { color:#e0bbf8; text-underline-offset:3px; }
+
+.demon-restoring .unchained-vignette { opacity:0; transition:opacity 1s .65s; }
+.demon-restoring .demon-controls { opacity:0; transition:opacity .65s .95s; }

@@ -2,6 +2,7 @@ const $ = selector => document.querySelector(selector);
 const STORAGE = 'miso.lastInspection.v1';
 let model, packet = null, filterIndex = 0, layerIndex = 0, busy = false;
 let lastRecording = null;
+let experience = 'model', modelView = 'network', savedModel = null;
 let scanTimer = null;
 function stopScan() {
   clearInterval(scanTimer); scanTimer = null;
@@ -92,6 +93,7 @@ function stopNetwork() {
   $('#network-play').setAttribute('aria-pressed', 'false');
 }
 function networkValue(column, index) {
+  const packet = null; // Model exploration describes parameters, independently of a recording.
   if (!packet) return null;
   if (column === 2) return packet.trace.features[index];
   if (column >= 3) return packet.trace.layers[column - 3].outputs[index];
@@ -105,6 +107,7 @@ function networkName(column, index) {
   return `Hidden ${column - 2} · neuron ${index + 1}`;
 }
 function renderNetwork() {
+  const packet = null; // Model exploration describes parameters, independently of a recording.
   stopNetwork();
   const host = $('#network-graph'); host.replaceChildren();
   const svg = graphElement('svg', {viewBox: '0 0 1160 615', class: 'network-svg', 'aria-label': 'Audio to four filters, sixteen pooled features, two hidden layers, and three output logits'});
@@ -145,7 +148,7 @@ function renderNetwork() {
         const peak = Math.max(...signal.map(Math.abs),.000001);
         group.append(graphElement('line',{x1:x-width/2+7,x2:x+width/2-7,y1:y,y2:y,stroke:'#cad4cf'}));
         if(signal.length) group.append(graphElement('path',{d:signal.map((v,j)=>`${j?'L':'M'}${x-width/2+7+j/(signal.length-1)*(width-14)},${y-v/peak*19}`).join(' '),fill:'none',stroke:c===0?'#597e75':'#6392b3','stroke-width':1.3}));
-        group.append(graphElement('text',{x,y:y+height/2+19,'text-anchor':'middle',class:'graph-label'}, c===0 ? packet?'1 second':'Load a sound' : `Filter ${i+1}`));
+        group.append(graphElement('text',{x,y:y+height/2+19,'text-anchor':'middle',class:'graph-label'}, c===0 ? packet?'1 second':'Audio input' : `Filter ${i+1}`));
       } else {
         group.append(graphElement('text',{x,y:y+4,'text-anchor':'middle',class:'graph-number'},i+1));
         if(c===2) group.append(graphElement('text',{x:x-25,y:y+4,'text-anchor':'end',class:'graph-feature-label'},networkName(c,i)));
@@ -165,7 +168,7 @@ function renderNetwork() {
   $('#network-play').disabled = !packet || busy;
   $('#network-step').disabled = !packet || busy;
   $('#network-step').value = 5;
-  $('#network-mode').textContent = packet ? 'Values from this recording · tanh scale −1 to +1; other columns scaled separately.' : 'Weights visible · load a sound for activations.';
+  $('#network-mode').textContent = packet ? 'Values from this recording · tanh scale −1 to +1; other columns scaled separately.' : 'Learned parameters · no recording needed.';
   updateNetworkFocus(); renderNetworkInspector();
 }
 function updateNetworkFocus() {
@@ -185,6 +188,7 @@ function updateNetworkFocus() {
   $('#network-step-label').textContent = stage===5 && networkTimer===null ? 'Full network · select a node' : networkStages[stage];
 }
 function renderNetworkInspector() {
+  const packet = null; // Model exploration describes parameters, independently of a recording.
   const {column:c,index:i}=networkSelection;
   const box=$('#network-inspector');box.replaceChildren();
   const summary=el('div',undefined,'inspector-summary');
@@ -198,16 +202,16 @@ function renderNetworkInspector() {
     const f=model.filters[i];
     summary.append(el('h3',`Filter ${i+1} · a learned sound pattern`),el('p',`101 coefficients multiply 101 input samples. Their sum produces one response. Peak frequency gain: ${fmt(f.peak_hz)} Hz. Each of the four time segments supplies one feature to the network.`));
     const button=el('button','Inspect this filter ↓','lab-button');
-    button.addEventListener('click',()=>{filterIndex=i;renderModel();if(packet)renderWindow();$('#filters-title').scrollIntoView({block:'start',behavior:'smooth'});});box.append(button);return;
+    button.addEventListener('click',()=>{filterIndex=i;showLabView('filters');$('#filters-title').scrollIntoView({block:'start',behavior:'smooth'});});box.append(button);return;
   }
   if(c===2) {
     summary.append(el('h3',`Feature ${i+1} · ${networkName(c,i)}`));
-    summary.append(el('p',packet?`Mean squared response ${exact(packet.trace.pooled[i])} × 1,000 = ${exact(packet.trace.features[i])}. This value goes to every neuron in hidden layer 1.`:'This feature is the average squared filter response in one time segment, multiplied by 1,000. Load a sound to see its value.'));
+    summary.append(el('p',packet?`Mean squared response ${exact(packet.trace.pooled[i])} × 1,000 = ${exact(packet.trace.features[i])}. This value goes to every neuron in hidden layer 1.`:'This feature is the average squared filter response in one time segment, multiplied by 1,000. Follow a sound to see the value for a recording.'));
     return;
   }
   const layer=model.layers[c-3], recorded=packet?.trace.layers[c-3];
   summary.append(el('h3',`${layer.weights[i].length} inputs. One ${layer.activation==='tanh'?'activation':'logit'}.`));
-  summary.append(el('p',recorded?`Weighted sum + bias = ${exact(recorded.preactivation[i])} → ${layer.activation} → ${exact(recorded.outputs[i])}`:`Each input is multiplied by its weight, then summed with bias ${exact(layer.biases[i])}. Activation: ${layer.activation}. Load a sound to see contributions.`));
+  summary.append(el('p',recorded?`Weighted sum + bias = ${exact(recorded.preactivation[i])} → ${layer.activation} → ${exact(recorded.outputs[i])}`:`Each input is multiplied by its weight, then summed with bias ${exact(layer.biases[i])}. Activation: ${layer.activation}. Follow a sound to see the calculation for a recording.`));
   const detail=el('details',undefined,'contribution-details');detail.append(el('summary','Inspect incoming weights & contributions'));
   const wrap=el('div',undefined,'table-scroll'), table=el('table'), head=el('thead'), header=el('tr');
   ['Input','Value','Weight','Contribution (input × weight)'].forEach(t=>header.append(el('th',t)));head.append(header);table.append(head);
@@ -232,7 +236,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){stopNetwor
 
 function renderModel() {
   $('#lab-content').hidden = false;
-  $('#checkpoint').textContent = `Checkpoint ${model.checkpoint}${packet ? ' · used for this trace' : ' · latest saved weights'}`;
+  $('#checkpoint').textContent = `Checkpoint ${model.checkpoint}${experience === 'journey' && packet ? ' · used for this trace' : ' · latest saved weights'}`;
   $('#parameter-count').textContent = `${model.parameter_count.toLocaleString()} learned parameters`;
   const count = Math.floor((16000 - model.filters[0].coefficients.length) / model.stride) + 1;
   $('#pipeline').replaceChildren();
@@ -274,6 +278,7 @@ function renderModel() {
 }
 
 function renderWeights() {
+  const packet = null; // Model exploration describes parameters, independently of a recording.
   const layer = model.layers[layerIndex], inputCount = layer.weights[0].length;
   const maximum = Math.max(...layer.weights.flat().map(Math.abs), ...layer.biases.map(Math.abs), .000001);
   const table = $('#weights-table'); table.replaceChildren();
@@ -333,7 +338,7 @@ function renderResponseMap() {
     values.forEach((value, i) => {
       const rect = document.createElementNS(svg.namespaceURI, 'rect');
       rect.setAttribute('x', i); rect.setAttribute('width', '1'); rect.setAttribute('height', '24');
-      rect.setAttribute('fill', color(value, limit)); svg.append(rect);
+      rect.setAttribute('fill', responseColor(value, limit)); svg.append(rect);
     });
     const marker = document.createElementNS(svg.namespaceURI, 'rect');
     marker.classList.add('response-marker'); marker.setAttribute('width', '1');
@@ -358,7 +363,7 @@ function renderResponseMap() {
     jump.addEventListener('click', () => selectResponse(f, peak));
     row.append(svg, jump); $('#response-map').append(row);
   });
-  $('#response-scale').textContent = `Shared color scale: −${fmt(limit)} to +${fmt(limit)}. Left → right follows time. Arrow keys move one step; Home / End jump to the edges. A strong response can still be suppressed or combined by later layers.`;
+  renderColorLegend($('#response-scale'), -limit, limit, true);
 }
 function renderWindow() {
   if (!packet) return;
@@ -390,6 +395,7 @@ function renderWindow() {
 function showTrace(result, source) {
   if (!result.trace?.model || result.trace.samples?.length !== 16000) throw new Error('This recording has no valid analysis. Record another sound.');
   stopScan();
+  experience = 'journey';
   packet = result; model = result.trace.model;
   renderModel();
   $('#trace-empty').hidden = true; $('#trace-content').hidden = false;
@@ -406,12 +412,14 @@ function showTrace(result, source) {
     grid.append(el('span', `Segment ${segment + 1}`));
     model.filters.forEach((_, f) => {
       const i = segment * model.filters.length + f;
-      const button = el('button', fmt(trace.features[i])); button.style.background = color(trace.features[i], max);
+      const button = el('button', fmt(trace.features[i])); button.style.background = energyColor(trace.features[i] / max);
+      button.setAttribute('aria-label', `Segment ${segment + 1}, filter ${f + 1}, energy ${exact(trace.features[i])}`);
       button.title = `Feature ${i}: segment ${segment + 1}, filter ${f + 1}`;
       button.addEventListener('click', () => { $('#feature-detail').textContent = `MLP input[${i}] · S${segment + 1}/F${f + 1} · mean square ${exact(trace.pooled[i])} → scaled feature ${exact(trace.features[i])}`; });
       grid.append(button);
     });
   }
+  renderColorLegend($('#feature-scale'), 0, max, false);
   $('#feature-detail').textContent = 'Select a feature for its exact value.';
   $('#activations').replaceChildren();
   trace.layers.forEach((layer, i) => {
@@ -443,7 +451,7 @@ function fail(error) { status(error.name === 'TimeoutError' ? 'Analysis timed ou
 async function refresh() {
   if (busy) return; setBusy(true); status('Reading saved checkpoint…');
   try {
-    const data = await request('/api/model'); model = data.model; packet = null; $('#audio-source').textContent = lastRecording ? 'Your latest sound is ready.' : 'Record one second with Miso to begin.';
+    const data = await request('/api/model'); savedModel = data.model; model = savedModel; packet = null;
     $('#trace-content').hidden = true; $('#trace-empty').hidden = false;
     renderModel(); status('');
   } catch (error) { fail(error); } finally { setBusy(false); }
@@ -466,7 +474,7 @@ $('#scan-play').addEventListener('click', () => {
   }, 100);
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopScan(); });
-$('#last-recording').addEventListener('click', () => { try { showTrace(lastRecording, 'Last microphone recording'); $('#audio-source').textContent = 'Latest microphone recording'; } catch (error) { fail(error); } });
+$('#last-recording').addEventListener('click', () => { try { showTrace(lastRecording, 'Last microphone recording'); } catch (error) { fail(error); } });
 $('#clear-trace').addEventListener('click', () => {
   try { sessionStorage.removeItem(STORAGE); } catch {}
   lastRecording = null; packet = null; $('#trace-content').hidden = true; $('#trace-empty').hidden = false;
@@ -476,16 +484,27 @@ try { lastRecording = JSON.parse(sessionStorage.getItem(STORAGE)); if (!lastReco
 setupFocusedLab();
 await refresh();
 if (lastRecording && new URLSearchParams(location.search).get('source') === 'last') {
-  try { showTrace(lastRecording, 'Last microphone recording'); $('#audio-source').textContent = 'Latest microphone recording'; } catch (error) { fail(error); }
+  try { showTrace(lastRecording, 'Last microphone recording'); } catch (error) { fail(error); }
 }
 
 
 function showLabView(name) {
   stopScan(); stopNetwork();
+  const journey = name === 'trace';
+  experience = journey ? 'journey' : 'model';
+  if (!journey) modelView = name;
+  model = journey && packet ? packet.trace.model : savedModel || model;
   document.querySelectorAll('[data-lab-view]').forEach(panel => panel.hidden = panel.dataset.labView !== name);
   document.querySelectorAll('[data-view]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.view === name)));
+  document.querySelectorAll('[data-experience]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.experience === experience)));
+  $('.network-toolbar').hidden = !journey;
+  $('.lab-tabs').hidden = journey;
+  $('.architecture-details').hidden = journey;
+  if (model) renderModel();
 }
+
 function setupFocusedLab() {
+  document.querySelectorAll('[data-experience]').forEach(button => button.addEventListener('click', () => showLabView(button.dataset.experience === 'journey' ? 'trace' : modelView)));
   document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => showLabView(button.dataset.view)));
   document.addEventListener('click', event => {
     if (event.target.closest('a[href="#filters-title"]')) showLabView('filters');
@@ -523,4 +542,25 @@ function setupFocusedLab() {
     const values = packet.trace.responses[filterIndex];
     selectResponse(filterIndex, values.reduce((best,v,i) => Math.abs(v) > Math.abs(values[best]) ? i : best, 0));
   });
+}
+
+
+// Opaque colors share the same interpolation in plots and their legends.
+function blendColor(from, to, amount) {
+  const t = Math.max(0, Math.min(1, amount));
+  return `rgb(${from.map((v,i) => Math.round(v + (to[i] - v) * t)).join(',')})`;
+}
+function energyColor(strength) { return blendColor([255,248,235], [231,166,142], strength); }
+function responseColor(value, max) {
+  return blendColor([250,247,240], value < 0 ? [201,116,98] : [92,140,177], Math.abs(value) / (max || 1));
+}
+function renderColorLegend(target, min, max, signed) {
+  const title = el('span', signed ? 'Signed response · shared across all filters' : 'Pooled energy · stronger →', 'color-legend-title');
+  const bar = el('div', undefined, 'color-legend-bar'); bar.setAttribute('aria-hidden', 'true');
+  bar.style.background = signed ? `linear-gradient(to right, ${responseColor(-max,max)}, ${responseColor(0,max)}, ${responseColor(max,max)})` : `linear-gradient(to right, ${energyColor(0)}, ${energyColor(1)})`;
+  const labels = el('div', undefined, 'color-legend-labels');
+  const short = n => n === 0 ? '0' : Number(n.toPrecision(3)).toString();
+  if (signed) labels.append(el('span', `${short(min)} · negative`), el('span', '0'), el('span', `+${short(max)} · positive`));
+  else labels.append(el('span', '0'), el('span', short(max)));
+  target.replaceChildren(title, bar, labels);
 }

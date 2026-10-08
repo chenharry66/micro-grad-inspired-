@@ -204,3 +204,28 @@ details { font-size: 12px; margin-top: 20px; } summary { cursor: pointer; color:
 @media(max-width:760px) { .audio-source { width: 100%; max-width: none; margin: 0; }.lab-desktop .source-controls { gap: 10px; }.lab-desktop .source-controls .lab-button { padding: 12px; font-size: 13px; } }
 .lab-desktop .record-new { text-decoration: none; display: inline-flex; align-items: center; font: 550 14px/1.3 var(--display); color: #344c58; }
 #record-panel { scroll-margin-top: 24px; }
+
+/* Legends use the exact color endpoints used by the corresponding cells. */
+.color-legend { max-width: 450px; margin-top: 24px; }
+.color-legend-title { display: block; font: 500 13px/1.5 var(--display); color: #5b5b67; margin-bottom: 8px; }
+.color-legend-bar { height: 13px; border-radius: 7px; border: 1px solid #d4cbc4; }
+.color-legend-labels { display: flex; justify-content: space-between; gap: 10px; margin-top: 7px; font: 12px/1.4 var(--display); color: #535364; font-variant-numeric: tabular-nums; }
+.lab-desktop select { appearance: none; padding-right: 40px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23344c58' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-position: right 14px center; background-size: 16px; background-repeat: no-repeat; }
+.lab-desktop .pool-layout { background: #f5f0f9; border: 1px solid #ded2e9; }
+.lab-desktop .pool-layout .formula { background: #e5d6ef; border: 1px solid #cbb4dc; color: #583e6a; font: 550 15px/1.6 var(--display); padding: 15px 18px; border-radius: 12px; }
+.lab-desktop .pool-layout .readout { background: #fffaf3; border: 1px solid #ddcbbb; border-radius: 12px; color: #695344 !important; }
+.lab-desktop .feature-grid button { color: #5b4035; border: 1px solid #d5bba8; border-radius: 9px; min-height: 49px; }
+.lab-desktop .feature-grid button:focus-visible { outline: 3px solid #985f53; outline-offset: 2px; }
+.lab-desktop .feature-grid > span { color: #63576b; }
+@media(max-width:500px) { .color-legend-labels { font-size: 11px; }.lab-desktop .feature-grid button { font-size: 10px; padding: 6px 2px; } }
+
+.experience-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0 26px; }
+.lab-desktop .experience-tabs button { text-align: left; padding: 20px 23px; border: 1px solid #d4cfc6; border-radius: 16px; background: #fffdf7; color: #53636b; }
+.experience-tabs strong { display: block; font: 550 22px/1.25 var(--display); margin-bottom: 6px; }
+.experience-tabs span { font: 13px/1.5 var(--display); }
+.lab-desktop .experience-tabs button[aria-pressed="true"] { background: #eae1f1; border-color: #a690b7; color: #574368; box-shadow: inset 0 -3px #c8b4d7; }
+.lab-desktop .experience-tabs button[data-experience="journey"][aria-pressed="true"] { background: #f5e3d7; border-color: #bf937b; color: #76503e; box-shadow: inset 0 -3px #ddbaa4; }
+@media(max-width:600px) { .experience-tabs { gap: 9px; }.lab-desktop .experience-tabs button { padding: 15px 12px; }.experience-tabs strong { font-size: 18px; }.experience-tabs span { font-size: 12px; } }
+
+/* Section introductions use the softer voice; chart typography stays intact. */
+.lab-desktop .section-heading .eyebrow { font: 450 17px/1.4 var(--friendly); text-transform: none; letter-spacing: 0; color: #82624f; margin: 0 0 9px; }
