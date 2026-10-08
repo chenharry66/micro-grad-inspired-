@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inside Miso — Model lab</title><link rel="stylesheet" href="/app.css"><link rel="stylesheet" href="/model.css"></head>
+<body class="desktop lab-desktop">
+<main class="lab">
+  <header><a class="wordmark" href="/"><span class="brand-icon" aria-hidden="true">m</span> miso<span class="brand-dot">.</span></a><nav aria-label="Main"><a href="/">Meet Miso</a><a href="/model" aria-current="page">Model lab</a></nav><span class="badge">EXPERIMENT / 01</span></header>
+  <div class="lab-heading">
+    <h1>Inside Miso<span class="brand-dot">.</span></h1>
+    <details class="snapshot-note"><summary>Model details</summary><div class="model-details-body"><div class="checkpoint"><span id="checkpoint"></span><span id="parameter-count"></span></div><p class="small-note">This is a saved checkpoint, not live training. Refresh loads the latest saved weights. A recording keeps the weights used for its prediction.</p><p class="small-note">Recordings are one second, converted to mono at 16 kHz.</p><button id="refresh" class="lab-button">Refresh weights</button></div></details>
+  </div>
+  <p id="lab-status" role="status" aria-live="polite">Loading model…</p>
+  <div id="lab-content" hidden>
+    <div class="network-toolbar"><div class="source-controls"><button id="last-recording" class="lab-button primary" disabled>Use latest recording</button><span class="source-or">or</span><a class="lab-button record-new" href="/#record-panel">Record a new sound ↗</a><span id="audio-source" class="audio-source">Record one second with Miso to begin.</span></div></div>
+    <div class="lab-tabs" role="group" aria-label="Explore the model"><button data-view="network" aria-pressed="true">Network</button><button data-view="filters" aria-pressed="false">Filters</button><button data-view="trace" aria-pressed="false">Sound → response</button><button data-view="weights" aria-pressed="false">Weights</button></div>
+    <section data-lab-view="network" class="network-window retro-window" aria-labelledby="network-title">
+      <div class="window-title"><span id="network-title">⌘ &nbsp; brain_explorer</span><span class="window-marks" aria-hidden="true">− &nbsp; □</span></div>
+
+      <div class="network-heading"><div><h2>Everything is connected.</h2><p>Pick a filter, feature, or neuron to follow its connections.</p></div><label class="connections-toggle"><input type="checkbox" id="all-connections"> Show all dense connections</label></div>
+      <p class="network-scroll-hint">Swipe the diagram to explore every layer ↔</p>
+      <div id="network-graph" class="network-scroll" tabindex="0" role="region" aria-label="Interactive model diagram; scroll horizontally on small screens"></div>
+      <div class="network-legend"><span><i class="graph-negative"></i> Negative</span><span><i class="graph-positive"></i> Positive</span><span>Dense line width = |weight| · node fill = activation</span><span id="network-mode">Load a sound to see activations.</span></div>
+      <div class="network-playback"><button id="network-play" class="lab-button" disabled>▶ Follow the signal</button><label for="network-step">Stage</label><input id="network-step" type="range" min="0" max="5" value="5" disabled><output id="network-step-label" for="network-step">Full network</output><span class="walkthrough-note">Replay of recorded stages · no training</span></div>
+      <div id="network-inspector" class="network-inspector" aria-live="polite"></div>
+    </section>
+    <details class="architecture-details"><summary>Model dimensions</summary><ol class="pipeline" id="pipeline" aria-label="Model architecture"></ol></details>
+    <section data-lab-view="filters" hidden class="lab-section" aria-labelledby="filters-title">
+      <div class="section-heading"><div><p class="eyebrow">01 / What the filters respond to</p><h2 id="filters-title">Four ways of listening.</h2></div><p>These are learned signal patterns—not a dedicated cat, dog, or cow detector.</p></div>
+      <div class="chart-tabs" role="group" aria-label="Filter plot"><button data-filter-plot="kernel-chart" aria-pressed="true">Shape in time</button><button data-filter-plot="frequency-chart" aria-pressed="false">Frequency response</button></div><div id="filter-picker" class="filter-picker" aria-label="Select a filter"></div>
+      <div class="chart-grid">
+        <article class="chart-card"><h3 id="kernel-title">Filter coefficients</h3><div id="kernel-chart"></div><p>Coefficient 0 multiplies the newest sample. Positive and negative weights reinforce or cancel parts of the sound.</p></article>
+        <article class="chart-card"><h3>Frequency response</h3><div id="frequency-chart"></div><p>Magnitude gain before stride sampling. Taller peaks mean stronger responses to those frequencies—not evidence of an animal label.</p></article>
+      </div>
+      <div class="filter-stats" id="filter-stats"></div>
+      <details><summary>Inspect all coefficients in this filter</summary><div class="table-scroll"><table><thead><tr><th>Coefficient / lag</th><th>Checkpoint index</th><th>Value</th></tr></thead><tbody id="coefficient-rows"></tbody></table></div></details>
+    </section>
+    <section data-lab-view="trace" hidden class="lab-section" aria-labelledby="trace-title">
+      <div class="section-heading"><div><p class="eyebrow">02 / Follow a real sound</p><h2 id="trace-title">From waveform to features.</h2></div></div>
+
+
+      <div id="trace-empty" class="empty"><strong>Start with a sound.</strong><span>Use your latest recording above, or record a new sound with Miso.</span></div>
+      <div id="trace-content" hidden>
+        <div class="trace-steps" role="group" aria-label="Sound walkthrough"><button data-step="0" aria-pressed="true">1. Find a response</button><button data-step="1" aria-pressed="false">2. Look inside</button><button data-step="2" aria-pressed="false">3. Pool energy</button><button data-step="3" aria-pressed="false">4. Make a guess</button></div>
+        <div class="trace-filter-control"><label for="trace-filter">Follow</label><select id="trace-filter"><option value="0">Filter 1</option><option value="1">Filter 2</option><option value="2">Filter 3</option><option value="3">Filter 4</option></select><button id="strongest" class="lab-button">Jump to strongest response</button></div>
+        <p id="filter-explanation" class="filter-explanation"></p>
+        <div class="trace-heading"><span id="trace-source"></span><button id="clear-trace" class="subtle">Clear recording</button></div>
+        <article class="chart-card"><h3>Input · one second at 16 kHz</h3><div id="input-chart"></div><p>The highlighted slice is the selected 101-sample window. Blue shows the sound; amber below shows the filter’s response.</p></article>
+        <details class="response-overview"><summary>Compare all four filters</summary><article class="chart-card"><h3>Where does each filter react?</h3><p>Each strip shows one filter across the whole recording. Blue is positive, coral is negative; stronger color means a larger response. All four use the same scale. Select a moment, or jump to a filter’s strongest response.</p><div id="response-map"></div><p id="response-scale"></p></article></details>
+        <div class="scan-controls"><button id="scan-play" class="lab-button" aria-pressed="false">Play filter scan</button><span>Slow motion · one filter step every 100 ms</span></div>
+        <div class="window-control"><label for="window">Move the filter through the sound</label><input id="window" type="range" min="0" max="248" value="0"><output id="window-label" for="window"></output></div>
+        <div class="chart-grid">
+          <article class="chart-card"><h3>Samples inside this window</h3><div id="window-chart"></div><p>Newest to oldest, in the order the filter multiplies them.</p></article>
+          <article class="chart-card"><h3>Sample × coefficient</h3><div id="product-chart"></div><p id="dot-product"></p></article>
+        </div>
+        <article class="chart-card response-card"><h3 id="response-title">Filter response across time</h3><div id="response-chart"></div><p id="response-note"></p></article>
+        <div class="pool-layout"><div><h3>Squaring, averaging, scaling.</h3><p>Responses are squared and averaged in four time segments. The model multiplies each average by 1,000 before the neural network.</p><p id="pool-note"></p><p class="formula">feature = mean(response²) × 1000</p><p id="feature-detail" class="readout">Select a feature for its exact value.</p></div><div><div id="feature-grid" class="feature-grid"></div><p class="small-note">Rows: time segments. Columns: filters. Color uses a shared scale across all 16 features.</p></div></div>
+        <div class="activation-section"><h3>Through the neural network</h3><div id="activations" class="activation-grid"></div></div>
+        <div class="prediction-box"><div><p class="eyebrow">Final prediction</p><h3 id="prediction-label"></h3><p>Softmax converts the three output logits into model scores.</p></div><div id="prediction-scores"></div></div>
+      </div>
+    </section>
+    <section data-lab-view="weights" hidden class="lab-section" aria-labelledby="weights-title">
+      <div class="section-heading"><div><p class="eyebrow">03 / Inspect the parameters</p><h2 id="weights-title">The connections behind the guess.</h2></div><p>Rows are output neurons. Columns are inputs. Select a cell to inspect a weight or bias.</p></div>
+      <div class="weight-controls"><label for="layer">Layer</label><select id="layer"></select><span class="legend"><i class="negative"></i> Negative <i class="positive"></i> Positive · intensity = magnitude</span></div>
+      <div class="table-scroll"><table id="weights-table" class="weights-table"></table></div>
+      <p id="weight-detail" class="readout" aria-live="polite">Select a weight to see its full value and checkpoint index.</p>
+      <p class="small-note">Colors share a symmetric scale within this layer, including biases. With a sound loaded, the readout also shows that weight’s contribution to its neuron. A large weight alone does not establish importance.</p>
+    </section>
+    <footer><span>Observed from the real Python forward pass. Read-only; no training parameters are edited.</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.fft.rfft.html">Frequency plots: magnitude of the filter FFT</a></footer>
+  </div>
+</main>
+<script type="module" src="/model.js"></script>
+</body></html>

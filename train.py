@@ -19,6 +19,7 @@ dataset = [(decode_file(base / unique_path), correct) for unique_path, correct i
 epochs = 1000
 alpha = 0.01
 model = Voice_Model() 
+prev_loss = 0
 
 def calculate_cross(logits):
     logits_exponentiated = [logit.exp() for logit in logits]
@@ -42,6 +43,7 @@ for epoch in range(epochs):
             "probabilities:",
             [round(float(p.n), 4) for p in probs],
             )
+
         prediction = max(range(len(probs)), key= lambda i: probs[i].n)
         correct += (prediction == true_label)
         # true disitbution is one-hot 
@@ -49,15 +51,17 @@ for epoch in range(epochs):
         total_loss += loss.n
         loss.backward()
     
-    if total_loss < 1e-4: 
+    loss_change = abs(prev_loss - total_loss)
+    
+    if loss_change < 1e-4: 
         break 
 
     print(f"Epoch {epoch }—Accuracy: {correct / len(dataset):.3f}, Loss: {total_loss:.6f}"
     )
-
     for parameter in model.parameters(): 
         parameter.n -= (alpha * parameter.grad)
 
+    prev_loss = total_loss
 
 saved_model = { 
     "model_name": "Animal_Net",

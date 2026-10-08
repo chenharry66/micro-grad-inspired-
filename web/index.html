@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f8f5ee">
+  <title>Miso — What animal am I?</title>
+  <link rel="stylesheet" href="/character/motion.css"><link rel="stylesheet" href="/app.css">
+</head>
+<body class="desktop home-desktop">
+  <main>
+    <header><a class="wordmark" href="/"><span class="brand-icon" aria-hidden="true">m</span> miso<span class="brand-dot">.</span></a><nav aria-label="Main"><a href="/" aria-current="page">Meet Miso</a><a href="/model">Model lab</a></nav><span class="badge" id="model-status">Checking model…</span></header>
+    <div class="desktop-caption"><span>A LITTLE SOUND. A LITTLE SCIENCE.</span><span>YOUR LOCAL ANIMAL CLUB ✳</span></div>
+    <section class="welcome" aria-label="Welcome to Miso">
+      <div class="welcome-heading"><span class="sound-sticker" aria-hidden="true">♪</span><p class="welcome-title">a little <span>sound</span><br> goes a long way<span class="welcome-spark" aria-hidden="true">✳</span></p></div>
+    </section>
+    <div class="layout" id="meet-miso" data-reveal>
+      <section class="visual retro-window" aria-label="Miso's reaction"><div class="window-title"><span>♥ &nbsp; miso.exe</span><span class="window-marks" aria-hidden="true">− &nbsp; □</span></div>
+        <div class="stage"><span class="stage-star star-one" aria-hidden="true">✦</span><span class="stage-star star-two" aria-hidden="true">✧</span><span class="stage-label">YOUR SMALL, UNSURE FRIEND</span><div id="character" data-state="idle"></div><p class="bubble" id="bubble">what am I again?</p></div>
+        <div class="stage-footer"><span id="pose-label">Miso · currently undecided</span><button id="pause" class="subtle" aria-pressed="false">Pause motion</button></div>
+      </section>
+      <section class="interaction">
+        <p class="eyebrow">HELLO, HUMAN. I’M MISO.</p>
+        <h1>A tiny friend.<br><span class="pixel-heading">A curious brain.</span></h1>
+        <p class="intro">Am I a cat? A dog? A very small cow?<br>Make a sound. Let’s figure it out together.</p>
+        <div class="record-panel retro-window" id="record-panel" data-phase="idle"><div class="window-title"><span>♪ &nbsp; sound_recorder</span><span class="window-marks" aria-hidden="true">□</span></div><div class="record-body">
+          <div class="record-top"><span class="eyebrow" id="record-label">Your one-second sound</span><span class="timer" id="timer" aria-hidden="true">1.0s</span></div>
+          <canvas id="waveform" height="80" aria-label="Live microphone waveform"></canvas>
+          <div class="progress-track" aria-hidden="true"><div id="progress"></div></div>
+          <div class="record-actions">
+            <button id="record" aria-label="Record one second of audio" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg>
+              <span id="button-label">Loading…</span>
+            </button>
+            <span class="shortcut">or press <kbd>Space</kbd></span>
+          </div>
+          <p id="status" role="status" aria-live="polite">Getting Miso ready…</p>
+        </div></div>
+        <section id="result" class="result" hidden aria-label="Prediction">
+          <div class="result-heading"><span class="eyebrow">Miso's best guess</span><strong id="result-label"></strong></div>
+          <div class="scores" id="scores"></div>
+          <p class="result-note">Still learning. Very confidently confused.</p>
+          <a id="inspect-result" href="/model?source=last" hidden>Inspect this prediction →</a>
+        </section>
+        <p class="privacy">The mic stops after one second. Audio is processed locally. The latest recording stays in this browser tab for inspection until you clear it or close the tab.</p>
+      </section>
+    </div>
+    <a class="lab-invitation" data-reveal href="/model"><span class="invitation-icon" aria-hidden="true">⌘</span><span><strong>Curious what’s going on in there?</strong><small>Follow a sound through Miso’s filters, neurons, and best guess.</small></span><span aria-hidden="true">Open the lab ↗</span></a>
+    <footer><span>A tiny identity crisis with a very good attitude.</span><span>Meow / Woof / Moo</span></footer>
+  </main>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
