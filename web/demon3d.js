@@ -112,11 +112,10 @@ export function createDemon(host, still = false, rigAsset, playSound = ()=>{}) {
   const repairs=[];const damage=[];const brokenComponents=new Map();const struckComponents=new Set(),soundCues=new Set();let lastImpact=-1;
   const hitKey=element=>element?.closest('#record-panel')||element;
   const cue=(key,kind)=>{if(!soundCues.has(key)){soundCues.add(key);playSound(kind);}};
-  function crackSurface(element,visit){
+  function crackSurface(element,visit,ix,iy){
     if(struckComponents.has(hitKey(element)))return;struckComponents.add(hitKey(element));cue('impact-'+visit,'impact');
     const r=element.getBoundingClientRect(), ns='http://www.w3.org/2000/svg';
     const svg=document.createElementNS(ns,'svg');svg.classList.add('miso-damage');svg.setAttribute('viewBox','0 0 240 240');
-    const ix=activeTarget?.ix ?? r.left+r.width*.5, iy=activeTarget?.iy ?? r.top+20;
     svg.style.left=`${ix-120}px`;svg.style.top=`${iy-120}px`;svg.dataset.impact=String(visit);
     if(!brokenComponents.has(element))brokenComponents.set(element,element.style.clipPath);
     const cut=clamp(ix-r.left,45,r.width-45), depth=Math.min(Math.max(74,iy-r.top+35),r.height*.8);
@@ -235,10 +234,39 @@ export function createDemon(host, still = false, rigAsset, playSound = ()=>{}) {
       rigRoot.position.set(0,roaming?-1.9:-1.55,roaming?.4:-1.05+smooth(10,15,t)*2.5);
       if(!roaming && !still){actor.rotation.y=-.32*smooth(4,4.6,seconds);actor.position.x=.18*Math.sin((seconds-4)*5)*smooth(4,4.3,seconds);}
       if(roaming && jumping){actor.rotation.z=Math.sin(beat/.85*Math.PI)*(visit%2?-.18:.18);actor.rotation.y=(visit%2?1:-1)*.65;}
-      if(landed){const impact=punching && elapsed>duration*.25+.28 && elapsed<duration*.25+.48;landed.classList.toggle('miso-struck',impact);if(impact && lastImpact!==visit){lastImpact=visit;crackSurface(landed,visit);}}
+
 
     }
     scene.updateMatrixWorld(true);
+    if(landed){
+      const punchTime=elapsed-duration*.25;
+      const impact=punching && punchTime>.28 && punchTime<.48;
+      // The clip is authored in model space; align its striking claw in viewport space.
+      // All damage uses this same projected contact after the rig and camera are updated.
+      if(punching && clawContacts[0] && activeTarget){
+        camera.updateMatrixWorld(true);
+        const bounds=landed.getBoundingClientRect(),rect=canvas.getBoundingClientRect();
+        const projected=clawContacts[0].getWorldPosition(new THREE.Vector3()).project(camera);
+        const handX=rect.left+(projected.x+1)*rect.width/2;
+        const handY=rect.top+(1-projected.y)*rect.height/2;
+        const targetX=clamp(activeTarget.ix,Math.max(0,bounds.left)+8,Math.min(innerWidth,bounds.right)-8);
+        const targetY=clamp(activeTarget.iy,Math.max(0,bounds.top)+8,Math.min(innerHeight,bounds.bottom)-8);
+        const plant=smooth(0,.25,punchTime)*(1-smooth(.52,.8,punchTime));
+        const dx=(targetX-handX)*plant,dy=(targetY-handY)*plant;
+        host.style.left=`${parseFloat(host.style.left)+dx}px`;
+        host.style.top=`${parseFloat(host.style.top)+dy}px`;
+        const contactX=handX+dx,contactY=handY+dy;
+        host.dataset.contactError=Math.hypot(targetX-contactX,targetY-contactY).toFixed(2);
+        if(impact && lastImpact!==visit){
+          lastImpact=visit;
+          // A missed surface must never break an unrelated component below it.
+          if(contactX>=bounds.left && contactX<=bounds.right && contactY>=bounds.top && contactY<=bounds.bottom){
+            crackSurface(landed,visit,contactX,contactY);
+          }
+        }
+      }
+      landed.classList.toggle('miso-struck',impact);
+    }
     if(rigAsset){
       clawContacts.forEach((o,i)=>{o?.getWorldPosition(clawPoints[i]);if(seconds<4)heldClaws[i].copy(clawPoints[i]);});
       const reveal=still||roaming?1:smooth(1.55,2.65,storyTime);

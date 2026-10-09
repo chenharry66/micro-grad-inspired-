@@ -1,39 +1,28 @@
-# micro-grad-inspired-
-Goofy mini project inspired by Karapathy's micrograd
+# Miso
 
-## Run Miso
+A goofy little learning project inspired by Andrej Karpathy’s micrograd.
 
-With the existing Python environment (`numpy` and `av` installed):
+I wanted to reinforce my understanding by reimplementing micrograd from scratch, then adding a basic animal-sound classifier: **meow, moo, and woof**. I hand-coded the autograd engine, neural network, and audio classification model from scratch. After building and training the model, I had Codex build the frontend and visualizations so I could see how my model actually worked.
+
+This was a quick project to learn from and have fun with, not a polished classifier or portfolio project.
+
+## Run it
+
+You’ll need Python 3, NumPy, and PyAV. From the project folder:
 
 ```sh
+python3 -m pip install numpy av
 python3 server.py
 ```
 
-Open **http://127.0.0.1:8001**. Click the microphone or press **Space**, allow microphone access, and make a sound as soon as “Listening” appears. The app captures exactly one second, stops the microphone, predicts Meow / Woof / Moo, and plays the matching character animation. The original character workshop remains in `character/`.
+Open **http://127.0.0.1:8001**. The saved model is included, so you don’t need to train it first.
 
-The browser records mono PCM using an AudioWorklet at the device's sample rate. Python uses the existing `audio.decode_bytes` conversion to 16,000 samples and the actual `Voice_Model` forward pass. `model.json` reloads for every prediction, including newly saved training weights. A partial or incompatible checkpoint produces a retryable error. The checkpoint must have been trained with the current model code; the existing file does not record architecture or preprocessing versions.
+Press **Space** or click **Make a sound**, allow microphone access, and make an animal noise when “Listening” appears. Miso records one second and gives you a classification. Open the **Model lab** to explore the model or follow your recording through it.
 
-Audio is processed locally and not written to files by the server. The latest microphone recording and its analysis are retained in browser session storage for the Model Lab; clear them in the lab or close the tab. The server binds only to loopback. For remote hosting, microphone access requires HTTPS and the local development server should be replaced with a production deployment. Prediction percentages are model scores, not calibrated guarantees; the current small training dataset limits accuracy.
+There’s also a little Easter egg: click the terminal button and enter `MISO.EXE`. Have fun with it.
 
-```sh
-python3 -m unittest discover -s tests -p 'test_*.py'
-node tests/recorder.test.cjs
-```
+## A note on accuracy
 
-Web Audio references: [AudioWorklet processing](https://developer.mozilla.org/en-US/docs/Web/API/AudioWorkletProcessor/process), [microphone permission and secure contexts](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia).
+I only had time to record myself making each animal noise three times—nine training recordings total. Overfitting is definitely a problem here: the model gets the original recordings right, but that doesn’t mean it generalizes to new ones.
 
-## Model Lab
-
-Open **http://127.0.0.1:8001/model**, or select **Model lab** in the navigation. Restart `server.py` after pulling server changes.
-
-- Explore the full connected model: waveform → four filters → 16 features → two hidden layers → three logits. Select a node to highlight its connections and inspect actual contributions. “Follow the signal” replays recorded stages without training or changing weights.
-- Inspect all four filters, their 101 coefficients, linear magnitude frequency responses, and exact checkpoint parameter indices.
-- Analyze a local WAV from `recordings/`, or follow **Inspect this prediction** after a microphone recording.
-- Move a window through all 249 filter steps to see the input samples, weighted products, actual response, and segment assignment.
-- Compare all four filters in the response heatmap, select a moment with the mouse or arrow keys, and jump to each filter's strongest absolute response. Play or pause a slow-motion scan through the calculation.
-- Inspect all 16 pooled/scaled features, layer activations and tanh saturation, logits, and softmax scores.
-- Select any dense weight or bias to see its full value, checkpoint index, and contribution for the loaded recording.
-
-`inspection.py` observes the real `Voice_Model` forward pass with temporary instance-level probes. It restores those probes afterward, never edits weights, and requires no changes to the running training script. Frequency responses use `abs(numpy.fft.rfft(coefficients, n=1024))` with a 16 kHz frequency axis. They describe the FIR response before stride sampling; they do not establish semantic labels or learned importance. The UI identifies the one trailing response discarded by the current four-segment pooling code.
-
-Checkpoint IDs hash the weights used for the trace. Loading an older microphone trace displays its own parameter snapshot, avoiding mixing it with newer saved weights. Refresh returns to the latest saved model. Training currently saves only at completion, so this is not a live epoch dashboard and has no weight-change history. For a new architecture, update inspection stride/architecture metadata and run the parity tests. Existing example recordings are training inputs, not a held-out evaluation set.
+In my own testing, it very rarely predicts “meow” on new recordings, even when I’m meowing super hard. “Moo” and “woof” seem to work much better for me. That’s a limitation of this little experiment, and the low training loss doesn’t tell the whole story.
